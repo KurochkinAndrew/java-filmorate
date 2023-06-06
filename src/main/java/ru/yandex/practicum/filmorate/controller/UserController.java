@@ -33,12 +33,13 @@ public class UserController {
     }
 
     @PutMapping
-    public User refreshFilm(@Valid @RequestBody User user){
+    public User refreshUser(@Valid @RequestBody User user){
         if(user.getName() == null){
             user.setName(user.getLogin());
         }
         if (!users.containsKey(user.getId())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "A user with an id = " + user.getId() +
+                    " doesn't exist");
         }
         users.put(user.getId(), user);
         return user;

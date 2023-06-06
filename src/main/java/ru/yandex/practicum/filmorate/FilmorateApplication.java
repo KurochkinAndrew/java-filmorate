@@ -8,8 +8,6 @@ public class FilmorateApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FilmorateApplication.class, args);
-		//Подскажи, пожалуйста, как поймать исключение (и какое исключение ловить), чтобы вывести сообщение в лог,
-		//если валидация не прошла по аннотации @Valid
 	}
 
 }
