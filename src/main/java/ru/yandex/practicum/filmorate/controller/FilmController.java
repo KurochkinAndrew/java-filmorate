@@ -16,20 +16,21 @@ public class FilmController {
     private int newId = 1;
 
     @GetMapping
-    public ArrayList<Film> getAll(){
+    public ArrayList<Film> getAll() {
         return new ArrayList<Film>(films.values());
     }
 
     @PostMapping
-    public Film createFilm(@Valid @RequestBody Film film){
+    public Film createFilm(@Valid @RequestBody Film film) {
         film.setId(newId);
         newId++;
         films.put(film.getId(), film);
         return film;
     }
+
     @PutMapping
-    public Film refreshFilm(@Valid @RequestBody Film film){
-        if (!films.containsKey(film.getId())){
+    public Film refreshFilm(@Valid @RequestBody Film film) {
+        if (!films.containsKey(film.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         films.put(film.getId(), film);

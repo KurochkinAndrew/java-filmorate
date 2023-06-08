@@ -17,13 +17,13 @@ public class UserController {
     private int newId = 1;
 
     @GetMapping
-    public ArrayList<User> getAll(){
+    public ArrayList<User> getAll() {
         return new ArrayList<User>(users.values());
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user){
-        if(user.getName() == null){
+    public User createUser(@Valid @RequestBody User user) {
+        if (user.getName() == null) {
             user.setName(user.getLogin());
         }
         user.setId(newId);
@@ -33,11 +33,11 @@ public class UserController {
     }
 
     @PutMapping
-    public User refreshUser(@Valid @RequestBody User user){
-        if(user.getName() == null){
+    public User refreshUser(@Valid @RequestBody User user) {
+        if (user.getName() == null) {
             user.setName(user.getLogin());
         }
-        if (!users.containsKey(user.getId())){
+        if (!users.containsKey(user.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "A user with an id = " + user.getId() +
                     " doesn't exist");
         }
