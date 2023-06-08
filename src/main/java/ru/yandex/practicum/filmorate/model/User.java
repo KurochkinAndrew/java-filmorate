@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Past;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validators.LoginConstraint;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 @Builder
