@@ -1,39 +1,51 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/films")
+@AllArgsConstructor
 public class FilmController {
-    private HashMap<Integer, Film> films = new HashMap<>();
-    private int newId = 1;
+    private final FilmService filmService;
 
     @GetMapping
     public ArrayList<Film> getAll() {
-        return new ArrayList<Film>(films.values());
+        return filmService.getAll();
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-        film.setId(newId);
-        newId++;
-        films.put(film.getId(), film);
-        return film;
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film refreshFilm(@Valid @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        films.put(film.getId(), film);
-        return film;
+        return filmService.refreshFilm(film);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable int id) {
+        return filmService.getFilmById(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public Film likeTheFilm(@PathVariable("id") int filmId, @PathVariable int userId) {
+        return filmService.likeTheFilm(filmId, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film deleteLikeT(@PathVariable("id") int filmId, @PathVariable int userId) {
+        return filmService.deleteLike(filmId, userId);
+    }
+
+    @GetMapping("/popular")
+    public ArrayList<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        return filmService.getMostPopularFilms(count);
     }
 }
