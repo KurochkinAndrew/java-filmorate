@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -15,7 +15,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public ArrayList<Film> getAll() {
+    public List<Film> getAll() {
         return filmService.getAll();
     }
 
@@ -45,7 +45,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public ArrayList<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
+    public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getMostPopularFilms(count);
     }
 }

@@ -8,13 +8,14 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private HashMap<Integer, User> users = new HashMap<>();
     private int newId = 1;
 
-    public ArrayList<User> getAll() {
+    public List<User> getAll() {
         return new ArrayList<User>(users.values());
     }
 

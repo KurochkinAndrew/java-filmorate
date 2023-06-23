@@ -2,11 +2,11 @@ package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public interface FilmStorage {
-    ArrayList<Film> getAll();
+    List<Film> getAll();
 
     HashSet<Integer> getAllId();
 
@@ -15,4 +15,6 @@ public interface FilmStorage {
     Film refreshFilm(Film film);
 
     Film getFilmById(int id);
+
+    List<Film> getMostPopularFilms(int count);
 }

@@ -8,8 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -17,7 +16,7 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-    public ArrayList<Film> getAll() {
+    public List<Film> getAll() {
         return filmStorage.getAll();
     }
 
@@ -35,30 +34,23 @@ public class FilmService {
 
     public Film likeTheFilm(int filmId, int userId) {
         userStorage.getUserById(userId);
-        filmStorage.getFilmById(filmId).like(userId);
-        return filmStorage.getFilmById(filmId);
+        Film film = filmStorage.getFilmById(filmId);
+        film.like(userId);
+        return film;
     }
 
     public Film deleteLike(int filmId, int userId) {
         userStorage.getUserById(userId);
-        filmStorage.getFilmById(filmId);
-        if (!filmStorage.getFilmById(filmId).getLikes().contains(userId)) {
+        Film film = filmStorage.getFilmById(filmId);
+        if (!film.getLikes().contains(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "A user with an id = " + userId +
                     " didn't like a film with an id = " + filmId);
         }
-        filmStorage.getFilmById(filmId).deleteLike(userId);
-        return filmStorage.getFilmById(filmId);
+        film.deleteLike(userId);
+        return film;
     }
 
-    public ArrayList<Film> getMostPopularFilms(int count) {
-        TreeSet<Film> treeSetOfFilms = new TreeSet<>(filmStorage.getAll());
-        ArrayList<Film> mostPopularFilms = new ArrayList<>();
-        Film film;
-        for (int i = 0; i < count; i++) {
-            film = treeSetOfFilms.pollLast();
-            if (film == null) break;
-            mostPopularFilms.add(film);
-        }
-        return mostPopularFilms;
+    public List<Film> getMostPopularFilms(int count) {
+        return filmStorage.getMostPopularFilms(count);
     }
 }

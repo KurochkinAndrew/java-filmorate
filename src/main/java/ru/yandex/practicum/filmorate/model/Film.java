@@ -33,6 +33,9 @@ public class Film implements Comparable<Film> {
     }
 
     public int compareTo(Film o) {
+        if (this.equals(o)) {
+            return 0;
+        }
         if (likes.size() - o.getLikes().size() == 0) {
             return 1;
         }
