@@ -8,10 +8,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
 
 @Data
 @Builder
-public class Film {
+public class Film implements Comparable<Film> {
     private int id;
     @NotBlank
     private String name;
@@ -21,4 +22,23 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private final HashSet<Integer> likes = new HashSet<>();
+
+    public void like(int id) {
+        likes.add(id);
+    }
+
+    public void deleteLike(int id) {
+        likes.remove(id);
+    }
+
+    public int compareTo(Film o) {
+        if (this.equals(o)) {
+            return 0;
+        }
+        if (likes.size() - o.getLikes().size() == 0) {
+            return 1;
+        }
+        return likes.size() - o.getLikes().size();
+    }
 }
