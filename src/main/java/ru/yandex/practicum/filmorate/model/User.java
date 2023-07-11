@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validators.LoginConstraint;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 
 @Builder
 @Data
+@AllArgsConstructor
 public class User {
     private int id;
     @Email
