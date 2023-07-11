@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class FilmoRateApplicationTests {
+class FilmorateApplicationTests {
     final FilmDbStorage filmDbStorage;
     final UserDbStorage userDbStorage;
     final LikesStorage likesStorage;
