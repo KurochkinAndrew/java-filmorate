@@ -11,33 +11,30 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FriendsStorage;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.LikesStorage;
-import ru.yandex.practicum.filmorate.storage.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class FilmorateApplicationTests {
-    final FilmDbStorage filmDbStorage;
-    final UserDbStorage userDbStorage;
-    final LikesStorage likesStorage;
-    final GenreStorage genreStorage;
-    final MpaStorage mpaStorage;
-    final FriendsStorage friendsStorage;
-    Film film;
-    Film film1;
-    User user;
-    User user1;
-    User user2;
+    private final FilmDbStorage filmDbStorage;
+    private final UserDbStorage userDbStorage;
+    private final LikesStorage likesStorage;
+    private final FriendsStorage friendsStorage;
+    private Film film;
+    private Film film1;
+    private User user;
+    private User user1;
+    private User user2;
 
     @BeforeEach
     public void beforeEach() {

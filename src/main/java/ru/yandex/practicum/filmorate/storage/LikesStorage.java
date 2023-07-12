@@ -34,7 +34,10 @@ public class LikesStorage {
     }
 
     public int countLikes(int filmId) {
-        return getLikes(filmId).size();
+        String sql = "SELECT COUNT(user_id) FROM likes WHERE film_id = ?";
+        Integer numberOfLikes = jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
+                rs.getInt("count(user_id)"), filmId);
+        return numberOfLikes;
     }
 
 }

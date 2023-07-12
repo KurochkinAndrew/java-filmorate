@@ -36,7 +36,9 @@ public class FriendsStorage {
 
     public List<User> getFriendsOfUser(int userId) {
         userStorage.getUserById(userId);
-        String sql = "SELECT * FROM users WHERE user_id IN (SELECT friend_id FROM friends WHERE user_id = ?)";
+        String sql = "SELECT u.USER_ID, u.EMAIL, u.LOGIN, u.NAME, u.BIRTHDAY " +
+                "FROM users AS u INNER JOIN friends AS f ON u.user_id = f.FRIEND_ID " +
+                "WHERE f.USER_ID = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new User(rs.getInt("user_id"),
                 rs.getString("email"), rs.getString("login"), rs.getString("name"),
                 rs.getDate("birthday").toLocalDate()), userId);

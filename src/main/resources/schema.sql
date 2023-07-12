@@ -51,7 +51,3 @@ film_id INTEGER NOT NULL REFERENCES film(film_id),
 user_id INTEGER NOT NULL REFERENCES users(user_id),
 PRIMARY KEY (film_id, user_id)
 );
-
-
-
-

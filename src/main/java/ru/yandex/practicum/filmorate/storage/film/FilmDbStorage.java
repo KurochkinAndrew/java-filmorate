@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -39,14 +42,20 @@ public class FilmDbStorage implements FilmStorage {
 
 
     public Film createFilm(Film film) {
-        String sql = "INSERT INTO film(name, description, release_date, duration, mpa)" +
-                "VALUES(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getMpa().getId());
-        Film savedFilm = getFilmByName(film.getName());
-        savedFilm.setGenres(film.getGenres());
-        genreStorage.addToStorage(savedFilm);
-        return savedFilm;
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert
+                .withTableName("film")
+                .usingGeneratedKeyColumns("film_id");
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", film.getName())
+                .addValue("description", film.getDescription())
+                .addValue("release_date", film.getReleaseDate())
+                .addValue("duration", film.getDuration())
+                .addValue("mpa", film.getMpa().getId());
+        Number newId = simpleJdbcInsert.executeAndReturnKey(params);
+        film.setId(newId.intValue());
+        genreStorage.addToStorage(film);
+        return film;
     }
 
     public Film refreshFilm(Film film) {
@@ -55,10 +64,8 @@ public class FilmDbStorage implements FilmStorage {
                 "mpa = ? WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
-        Film refreshedFilm = getFilmByName(film.getName());
-        refreshedFilm.setGenres(film.getGenres());
-        genreStorage.updateGenre(refreshedFilm);
-        return getFilmByName(film.getName());
+        genreStorage.updateGenre(film);
+        return getFilmById(film.getId());
     }
 
     public Film getFilmById(int id) {
@@ -80,11 +87,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public List<Film> getMostPopularFilms(int count) {
-        String sql = "SELECT * FROM film WHERE film_id IN (SELECT film.film_id " +
-                "FROM film " +
-                "LEFT JOIN likes ON film.FILM_ID = likes.FILM_ID " +
-                "GROUP BY FILM.FILM_ID " +
-                "ORDER BY count(user_id) DESC) LIMIT ?";
+        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa, count(l.USER_ID) " +
+                "FROM film AS f LEFT JOIN likes AS l " +
+                "ON f.FILM_ID = l.FILM_ID GROUP BY f.FILM_ID " +
+                "ORDER BY count(l.USER_ID) DESC LIMIT ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Film(rs.getInt("film_id"),
                 rs.getString("name"),
                 rs.getString("description"),
@@ -95,18 +101,4 @@ public class FilmDbStorage implements FilmStorage {
                 new HashSet<>(genreStorage.getGenresOfFilm(rs.getInt("film_id"))),
                 likesStorage.countLikes(rs.getInt("film_id"))), count);
     }
-
-    private Film getFilmByName(String name) {
-        String sql = "SELECT * FROM film WHERE name = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Film(rs.getInt("film_id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getDate("release_date").toLocalDate(),
-                rs.getInt("duration"),
-                new HashSet<>(likesStorage.getLikes(rs.getInt("film_id"))),
-                mpaStorage.getMpaById(rs.getInt("mpa")),
-                new HashSet<>(genreStorage.getGenresOfFilm(rs.getInt("film_id"))),
-                likesStorage.countLikes(rs.getInt("film_id"))), name);
-    }
-
 }
