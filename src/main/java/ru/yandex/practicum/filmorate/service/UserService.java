@@ -3,16 +3,18 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.FriendsStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendsStorage friendsStorage;
 
     public List<User> getAll() {
         return userStorage.getAll();
@@ -31,35 +33,29 @@ public class UserService {
     }
 
     public User addFriend(int id, int friendId) {
-        User user = userStorage.getUserById(id);
-        user.addFriend(userStorage.getUserById(friendId).getId());
-        userStorage.getUserById(friendId).addFriend(userStorage.getUserById(id).getId());
-        return user;
+        friendsStorage.addFriend(id, friendId);
+        return userStorage.getUserById(id);
     }
 
     public User deleteFriend(int id, int friendId) {
-        User user = userStorage.getUserById(id);
-        user.deleteFriend(userStorage.getUserById(friendId).getId());
-        userStorage.getUserById(friendId).deleteFriend(userStorage.getUserById(id).getId());
-        return user;
+        friendsStorage.deleteFriend(id, friendId);
+        return userStorage.getUserById(id);
     }
 
     public List<User> getFriendsOfUser(int id) {
-        ArrayList<User> friends = new ArrayList<>();
-        for (int friendId : userStorage.getUserById(id).getFriends()) {
-            if (userStorage.getUserById(friendId) != null) friends.add(userStorage.getUserById(friendId));
-        }
-        return friends;
+        return friendsStorage.getFriendsOfUser(id);
+    }
+
+    public Set<Integer> getFriendsIdOfUser(int id) {
+        return friendsStorage.getFriendsIdOfUser(id);
     }
 
     public List<User> getCommonFriends(int id1, int id2) {
-        HashSet<Integer> userFriendsId = userStorage.getUserById(id1).getFriends();
-        HashSet<Integer> otherUserFriendsId = userStorage.getUserById(id2).getFriends();
         ArrayList<User> commonFriends = new ArrayList<>();
-        for (int id : userFriendsId) {
-            if (otherUserFriendsId.contains(id)) {
-                commonFriends.add(userStorage.getUserById(id));
-            }
+        Set<Integer> commonFriendsId = friendsStorage.getFriendsIdOfUser(id1);
+        commonFriendsId.retainAll(friendsStorage.getFriendsIdOfUser(id2));
+        for (int id : commonFriendsId) {
+            commonFriends.add(userStorage.getUserById(id));
         }
         return commonFriends;
     }

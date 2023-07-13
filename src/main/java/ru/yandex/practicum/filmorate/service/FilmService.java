@@ -5,8 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.LikesStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final LikesStorage likesStorage;
 
     public List<Film> getAll() {
         return filmStorage.getAll();
@@ -33,20 +35,18 @@ public class FilmService {
     }
 
     public Film likeTheFilm(int filmId, int userId) {
-        userStorage.getUserById(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        film.like(userId);
-        return film;
+        likesStorage.addLike(filmId, userId);
+        return filmStorage.getFilmById(filmId);
     }
 
     public Film deleteLike(int filmId, int userId) {
         userStorage.getUserById(userId);
         Film film = filmStorage.getFilmById(filmId);
-        if (!film.getLikes().contains(userId)) {
+        if (likesStorage.getLikes(filmId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "A user with an id = " + userId +
                     " didn't like a film with an id = " + filmId);
         }
-        film.deleteLike(userId);
+        likesStorage.deleteLike(filmId, userId);
         return film;
     }
 
